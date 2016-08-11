@@ -4,19 +4,24 @@
 
 This project aims to train a neural network that can take a rough sketch and output a cleaned lineart. The output doesn’t have to be perfect, but should be good enough to avoid the bulk of the inking and lining process. To accomplish this, there’s several parts that needs to be completed:
 
-1. An image preprocessor
+* An image preprocessor
 
-2. A bootstrapper
+* A bootstrapper
 
-3. A scoring function
+* A scoring function
 
-4. A sketch generator
+* A sketch generator
 
-5. The neural network
+* The neural network
 
 The overall process will work like this. 
 
-We will first need to acquire thousands of line art images from the internet, possibly up to hundreds of thousands. Then we will batch feed the images through the preprocessor to do some initial cleaning, resizing, and saving the images in a common file format. The bootstrapper will attempt to generate more data from a smaller number of images to improve sample size. The scoring function is an attempt to give a score on the similarity between two pieces of lineart. Then, the sketch generator will create sketches for each piece of lineart, possibly more than one. This sketch should meet a some minimum score on the similarity to the original image. Finally the neural network will take these generated sketches and attempt to recreate the original image. Again, the scoring function will be used here to update the neural network. Finally, we will validate the neural network on the validation dataset. Check the related sections for more information.
+1. We will first need to acquire thousands of line art images from the internet, possibly up to hundreds of thousands. 
+2. Then we will batch feed the images through the preprocessor to do some initial cleaning, resizing, and saving the images in a common file format. 
+3. The bootstrapper will attempt to generate more data from a smaller number of images to improve sample size. The scoring function is an attempt to give a score on the similarity between two pieces of lineart. 
+4. Then, the sketch generator will create sketches for each piece of lineart, possibly more than one. This sketch should meet a some minimum score on the similarity to the original image. 
+5. Finally the neural network will take these generated sketches and attempt to recreate the original image. Again, the scoring function will be used here to update the neural network. 
+6. Finally, we will validate the neural network on the validation dataset. Check the related sections for more information.
 
 We expect to need a minimum of 10,000 images to get any results and possibly up to 100,000 to fully train the neural network due to the complexity of the task. The current estimate is speculative and based on the papers read. In addition, we need a separate data set for validation, preferably multiples as we iterate. Each set of validation data should be at least 25% of the size of the training dataset and we should have at least two validation sets. So we need at minimum 15,000 images and preferably 150,000 images. Finally, we expect to need several iterations of most parts of the code in order to achieve the results. We can start with 100-1000 images for initial development, but we should up the number of images as we reach the machine learning stage.
 
@@ -91,7 +96,7 @@ This method is just translating the image a small amount then averaging the imag
 
 This method can be improved by patching different areas with different seeds. For example, we can select a random sub rectangle of the image and have that rectangle consists of random small horizontal translations. Then we can select a different rectangle and use vertical translations. This can be extrapolated to a set of averages of a random gaussian distribution of translations at random sub-sections of the image. If we do this, it might be good enough as an initial starting point for data generation.
 
-### Stroke Emulator 1 - Qihan
+### Stroke Emulator 1 
 
 This method is to emulate various strokes. The first step is to generate a set of images as a sample of the strokes (around 30?) used during a sketch. The algorithm will then take the set of pregenerated strokes as well as as the original artwork. Then, iteratively, it will randomly select a stroke and try to match that stroke in a way that maximizes the score from the scoring function. The stroke can be deformed in the following methods:
 
@@ -129,19 +134,19 @@ Possible ways of doing this includes:
 
 * Flipping the images horizontally
 
-* Flipping the images vertically^1
+* Flipping the images vertically<sup>1</sup>
 
-* Rotating the image^1
+* Rotating the image<sup>1</sup>
 
-* Scaling the image^2
+* Scaling the image<sup>2</sup>
 
-* Translating the image^2
+* Translating the image<sup>2</sup>
 
 Note 1: Flipping the image vertically or rotating the image might create different semantic data. For example, a neural network trained on upside down images might not be able to internalize eyes should be above the mouth because it is trained on images that have eyes below the mouth.
 
 Note 2: The final dataset should be scale and translation invariant. However, it is good to test some scaled and translated images to make sure it actually doesn’t impact quality. If there is a significant difference, we can feed in some scaled and translated images to help improve that.
 
-The sketch cleaner takes a complete piece of lineart as input, it should spit out the same image as output. Therefore, we can use the original artwork as extra input for training.
+If the sketch cleaner takes a complete piece of lineart as input, it should spit out the same image as output. Therefore, we can use the original artwork as extra input for training.
 
 ## Other Considerations
 
